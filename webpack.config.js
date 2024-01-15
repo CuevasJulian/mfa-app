@@ -1,6 +1,7 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { ModuleFederationPlugin } = require("webpack").container;
+const deps = require("./package.json").dependencies;
 
 module.exports = {
   entry: "./src/index.tsx",
@@ -31,8 +32,18 @@ module.exports = {
       filename: "remoteEntry.js",
       remotes: {},
       exposes: { "./mfa": "./src/App.tsx" },
+      shared: {
+        ...deps,
+        react: {
+          singleton: true,
+          requiredVersion: deps.react,
+        },
+      },
     }),
   ],
+  devServer: {
+    historyApiFallback: true,
+  },
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
   },
